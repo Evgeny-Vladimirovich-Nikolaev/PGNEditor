@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class PGN {
+public class Game {
 
     String author;
     String task;
@@ -15,6 +15,7 @@ public class PGN {
     byte totalNumber;
     String material;
     String ideas;
+    String fen;
     String body;
     Date date;
     String event;
