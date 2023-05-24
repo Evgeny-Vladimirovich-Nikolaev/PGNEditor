@@ -13,7 +13,7 @@ import java.util.ListIterator;
 
 public class PGNReader {
 
-    private static LinkedList<String> lines;
+    private static List<String> lines;
     private static List<List<String>> games;
 
 
@@ -49,9 +49,11 @@ public class PGNReader {
         while(itr.hasNext()) {
             String line = itr.next();
             List<String> game = new ArrayList<>();
-            while(itr.hasNext() && line.startsWith("[") ) {
+            while(line.startsWith("[") ) {
                 game.add(line);
-                line = itr.next();
+                if (itr.hasNext()) {
+                    line = itr.next();
+                }
             }
             while(itr.hasNext() && !itr.next().startsWith("[")) {
                 game.add(itr.next());
