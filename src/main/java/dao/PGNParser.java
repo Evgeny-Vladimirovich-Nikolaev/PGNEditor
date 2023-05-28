@@ -15,32 +15,32 @@ public class PGNParser {
             Game game = new Game();
             for (String line : list) {
                 if (line.startsWith("[")) {
-                    String tagValue = line.substring(line.indexOf('"') +1, line.lastIndexOf('"'));
+                    String tagValue = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
                     switch (line.substring(0)) {
-                        case "[Date" :
+                        case "[Date":
                             game.setDate(tagValue);
                             break;
-                        case "[Автор" :
+                        case "[Автор":
                             game.setAuthor(tagValue);
                             break;
-                        case "[Event" :
+                        case "[Event":
                             game.setEvent(tagValue);
                             break;
-                        case "[Result" :
+                        case "[Result":
                             game.setResult(tagValue);
                             break;
-                        case "[Задание" :
-                            game.setTask(line);
+                        case "[Задание":
+                            game.setTask(tagValue);
                             break;
-                        case "[Annotator" :
-                            game.setAnnotator(line);
+                        case "[Annotator":
+                            game.setAnnotator(tagValue);
                             break;
-                        case "[Remark" :
-                            game.setRemark(line);
+                        case "[Remark":
+                            game.setRemark(tagValue);
                             break;
-                        case "[FEN" :
-                            game.setFen(line);
-                            analyzeFen(game, line);
+                        case "[FEN":
+                            game.setFen(tagValue);
+                            analyzeFen(game, tagValue);
                             break;
                     }
                 } else {
@@ -52,16 +52,24 @@ public class PGNParser {
     }
 
     private static void analyzeFen(Game game, String fen) {
-        final String position = getPositionFromFen(fen);
-        calculateMaterial(game, position);
+        final byte[] position = fen.substring(0, fen.indexOf(' ')).getBytes();
+        calculatePieces(game, position);
     }
 
-    private static String getPositionFromFen(String fen) {
-        return null;
+    private static void calculatePieces(Game game, byte[] position) {
+        byte white = 0;
+        byte black = 0;
+        for (byte b : position) {
+            if (b > 65 && b < 83) {
+                white++;
+            } else if (b > 97 && b < 115) {
+                black++;
+            }
+        }
+        game.setWhiteNumber(white);
+        game.setBlackNumber(black);
+        game.setTotalNumber((byte) (white + black));
     }
 
-    private static void calculateMaterial(Game game, String line) {
-
-    }
 
 }
