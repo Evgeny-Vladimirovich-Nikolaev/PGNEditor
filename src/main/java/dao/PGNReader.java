@@ -14,22 +14,19 @@ import java.util.ListIterator;
 public class PGNReader {
 
     private static List<String> lines;
-    private static List<List<String>> games;
+    private static List<List<String>> processedList;
 
 
     public static List<Game> getPGNList(String path) {
-        lines = new LinkedList<>();
-        games = new LinkedList<>();
+        lines = new ArrayList<>();
+        processedList = new LinkedList<>();
         readByLines(path);
         writeGames();
 
-        for (List<String> list: games
-             ) {
-            System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n-----------------------------------------------------------------------------------------------------------");
-            System.out.println(list);
-        }
 
-        return null;
+        System.out.println(processedList.size());
+
+        return PGNParser.parseGamesList(processedList);
     }
 
     private static void readByLines(String path) {
@@ -44,50 +41,50 @@ public class PGNReader {
     }
 
     private static void writeGames() {
+        long start = System.currentTimeMillis();
+
+
+//        int index = 0;
+//        while (index < lines.size()) {
+//            List<String> separateList = new ArrayList<>();
+//
+//            while (index < lines.size() && lines.get(index).startsWith("[")) {
+//                separateList.add(lines.get(index++));
+//            }
+//            while (index < lines.size() && !lines.get(index).startsWith("[")) {
+//                separateList.add(lines.get(index++));
+//            }
+//            processedList.add(separateList);
+//        }
 
         ListIterator<String> itr = lines.listIterator(0);
-        while(itr.hasNext()) {
-            String line = itr.next();
-            List<String> game = new ArrayList<>();
-            while(line.startsWith("[") ) {
-                game.add(line);
-                if (itr.hasNext()) {
-                    line = itr.next();
+        List<String> separateList = new ArrayList<>();
+        List<String> newSeparateList = null;
+        String line;
+        while (itr.hasNext()) {
+            while (itr.hasNext()) {
+                line = itr.next();
+                separateList.add(line);
+                if (!line.startsWith("[")) {
+                    break;
                 }
             }
-            while(itr.hasNext() && !itr.next().startsWith("[")) {
-                game.add(itr.next());
+            while (itr.hasNext()) {
+                line = itr.next();
+                if (!line.startsWith("[")) {
+                    separateList.add(line);
+                } else {
+                    newSeparateList = new ArrayList<>();
+                    newSeparateList.add(line);
+                    break;
+                }
             }
-            games.add(game);
+            processedList.add(separateList);
+            separateList = newSeparateList;
         }
-
-
-
-//        ListIterator<String> itr = lines.listIterator(0);
-//        List<String> game = new ArrayList<>();
-//        boolean tagsComplete = false;
-//        boolean isAdded = false;
-//
-//        while (itr.hasNext()) {
-//            String line = itr.next();
-//            if (line.length() > 0) {
-//                if (line.charAt(0) == '[') {
-//                    if(tagsComplete) {
-//                        if(!isAdded) {
-//                            games.add(game);
-//                        }
-//                        game = new ArrayList<>();
-//                    }
-//                    game.add(line);
-//                } else {
-//                    tagsComplete = true;
-//                    if(line.length() > 1) {
-//                        game.add(line);
-//                        isAdded = true;
-//                    }
-//                }
-//            }
-//        }
+        long end = System.currentTimeMillis();
+        long total = end - start;
+        System.out.println("time: " + total);
     }
 
 }

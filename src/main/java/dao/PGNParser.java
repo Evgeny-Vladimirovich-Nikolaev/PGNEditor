@@ -1,5 +1,6 @@
 package dao;
 
+import com.sun.tools.javac.util.StringUtils;
 import model.Game;
 
 import java.util.ArrayList;
@@ -7,46 +8,46 @@ import java.util.List;
 
 public class PGNParser {
 
-    public static List<Game> parsePGN(StringBuilder sb) {
-        List<Game> gamesList = new ArrayList();
-        int index = 0;
-        while(index < sb.length()) {
+    private static List<Game> parsedGames;
+
+    public static List<Game> parseGamesList(List<List<String>> processedList) {
+        parsedGames = new ArrayList<>();
+        for (List<String> list : processedList) {
             Game game = new Game();
-            StringBuilder tags = new StringBuilder();
-            StringBuilder body = new StringBuilder();
-            if(sb.charAt(index) == '[') {
-                while(index < sb.length()) {
-                    if(sb.charAt(index) == ']' && !checkTagsComplete(sb, index)) {
+            for (String line : list) {
+                switch (line.substring(0)) {
+                    case "[Date" :
+                        addDate(game, line);
                         break;
-                    }
-                    tags.append(sb.charAt(index++));
-                    System.out.println(tags);
+                    case "[Автор":
+                        addAuthor(game, line);
+                        break;
+                    case "[Event:" :
+                        addEvent(game, line);
+                        break;
+                    case "[Задание":
+                        addTask(game, line);
+                        break;
                 }
-                System.out.println("-----------------------------------------------------------------");
-                System.out.println(tags);
-            }
-            while(index < sb.length() && (sb.charAt(index) == ' ' || sb.charAt(index) == '\n')) {
-                index++;
-            }
-            while(index < sb.length() && sb.charAt(index) != '[') {
-                body.append(sb.charAt(index));
             }
         }
         return null;
     }
 
-    public static void addFieldToGame(Game game) {
-
+    private static void addDate(Game game, String line) {
+        game.setDate(line.substring(line.indexOf('"'), line.lastIndexOf('"')));
     }
 
-    private static boolean checkTagsComplete(StringBuilder sb, int index) {
-        if(index + 2 >=  sb.length()) {
-            return true;
-        }
-        if(sb.charAt(index + 1) != '[' && sb.charAt(index + 2) != '[') {
-            return true;
-        }
-        return false;
+    private static void addAuthor(Game game, String line) {
+        game.setAuthor(line.substring(line.indexOf('"'), line.lastIndexOf('"')));
+    }
+
+    private static void addEvent(Game game, String line) {
+        game.setEvent(line.substring(line.indexOf('"'), line.lastIndexOf('"')));
+    }
+
+    private static void addTask(Game game, String line) {
+        game.setTask(line.substring(line.indexOf('"'), line.lastIndexOf('"')));
     }
 
 }

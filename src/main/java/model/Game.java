@@ -17,7 +17,7 @@ public class Game {
     String ideas;
     String fen;
     String body;
-    Date date;
+    String date;
     String event;
     String annotator;
     String remark;
