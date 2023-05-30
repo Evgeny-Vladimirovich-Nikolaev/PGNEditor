@@ -1,20 +1,23 @@
-import dao.PGNParser;
 import dao.PGNReader;
+import model.Game;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PGNEditor {
 
+    private static final String  PATH = "C:\\Users\\Nobilis\\YandexDisk-Nobilis13\\JAVA\\ЭТЮД ГЛАЗАМИ ГРОССМЕЙСТЕРОВ.pgn";
+
     public static void main(String[] args) {
-        PGNReader.getPGNList("C:\\Users\\Nobilis\\YandexDisk-Nobilis13\\Шахматы\\bases\\Новая\\Надареишвили_ЭТЮД ГЛАЗАМИ ГРОССМЕЙСТЕРОВ - копия.pgn");
+        List<Game> gamesList = PGNReader.getPGNList(PATH);
         //PGNParser.parsePGN()
 
-
-
-
-
+        System.out.println(gamesList.get(0));
+        System.out.println(gamesList.get(9));
+        System.out.println(gamesList.get(gamesList.size() - 1));
 
     }
 
+
 }
+

@@ -14,6 +14,7 @@ public class Game {
     byte blackNumber;
     byte totalNumber;
     String material;
+    byte materialIndex;
     String ideas;
     String fen;
     String body;
