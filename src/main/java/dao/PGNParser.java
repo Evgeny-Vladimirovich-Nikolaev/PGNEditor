@@ -91,6 +91,9 @@ public class PGNParser {
                     material[4]++;
                     white++;
                 }
+                case 75 -> {            // K -> white king
+                    white++;
+                }
                 case 112 -> {            // p -> black pawn
                     material[5]++;
                     black++;
@@ -111,6 +114,9 @@ public class PGNParser {
                     material[9]++;
                     black++;
                 }
+                case 107 -> {            // k -> black king
+                    black++;
+                }
             }
             for(int i = 10; i < 13; i++) {
                 material[i] = material[i - 9] + material[i - 4];
@@ -122,4 +128,8 @@ public class PGNParser {
         }
 
     }
+}
+
+class MaterialClassifier {
+
 }
