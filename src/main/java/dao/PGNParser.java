@@ -61,7 +61,7 @@ public class PGNParser {
     }
 
     private static void calculatePieces(Game game, byte[] position) {
-        final int[] material = new int[14];
+        final int[] material = new int[15];
         byte white = 0;
         byte black = 0;
         for (byte b : position) {
@@ -118,10 +118,10 @@ public class PGNParser {
                     black++;
                 }
             }
-            for(int i = 10; i < 13; i++) {
+            for(int i = 10; i < 14; i++) {
                 material[i] = material[i - 9] + material[i - 4];
             }
-            material[13] = material[10] + material[11] + material[12];      // total number of rooks, bishops and knights
+            material[14] = material[10] + material[11] + material[12] + material[13];      // total number of knights, bishops, rooks and queens
             game.setWhiteNumber(white);
             game.setBlackNumber(black);
             game.setTotalNumber((byte) (white + black));
@@ -131,5 +131,33 @@ public class PGNParser {
 }
 
 class MaterialClassifier {
+    private static void startAnalyze(int[] material) {
+        if(material[13] > 0) {
+            countWithQueens(material);
+        } else if(material[12] > 0) {
+            countWithRooks(material);
+        } else if(material[11] > 0) {
+            countWithBishops(material);
+        } else if(material[10] > 0) {
+            countWithKnights(material);
+        } else if(material[0] != 0 && material[5] != 0) {
 
+        }
+    }
+
+    private static void countWithQueens(int[] material) {
+
+    }
+
+    private static void countWithRooks(int[] material) {
+
+    }
+
+    private static void countWithBishops(int[] material) {
+
+    }
+
+    private static void countWithKnights(int[] material) {
+
+    }
 }
