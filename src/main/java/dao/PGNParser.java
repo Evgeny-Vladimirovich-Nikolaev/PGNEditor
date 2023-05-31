@@ -131,33 +131,35 @@ public class PGNParser {
 }
 
 class MaterialClassifier {
-    private static void startAnalyze(int[] material) {
+
+    private static String startAnalyze(int[] material) {
         if(material[13] > 0) {
-            countWithQueens(material);
+            return countWithQueens(material);
         } else if(material[12] > 0) {
-            countWithRooks(material);
+            return countWithRooks(material);
         } else if(material[11] > 0) {
-            countWithBishops(material);
+            return countWithBishops(material);
         } else if(material[10] > 0) {
-            countWithKnights(material);
+            return countWithKnights(material);
         } else if(material[0] != 0 && material[5] != 0) {
-
+            return MaterialClassifications.P.getCategory();
         }
+        throw new RuntimeException();
     }
 
-    private static void countWithQueens(int[] material) {
-
+    private static String countWithQueens(int[] material) {
+        return null;
     }
 
-    private static void countWithRooks(int[] material) {
-
+    private static String countWithRooks(int[] material) {
+        return null;
     }
 
-    private static void countWithBishops(int[] material) {
-
+    private static String countWithBishops(int[] material) {
+        return null;
     }
 
-    private static void countWithKnights(int[] material) {
-
+    private static String countWithKnights(int[] material) {
+        return null;
     }
 }
