@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PGNEditor {
 
-    private static final String  PATH = "D:\\Dev\\IDEA\\PGNEditor\\src\\main\\resources\\source";
+    private static final String  PATH = "C:\\Users\\Nobilis\\YandexDisk\\JAVA\\ЭТЮД ГЛАЗАМИ ГРОССМЕЙСТЕРОВ.pgn";
 
     public static void main(String[] args) {
         List<Game> gamesList = PGNReader.getPGNList(PATH);
