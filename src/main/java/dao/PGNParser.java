@@ -16,6 +16,7 @@ public class PGNParser {
             StringBuilder sb = new StringBuilder();
             for (String line : list) {
                 if (line.startsWith("[")) {
+                    System.out.println(line);
                     String tagValue = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
                     switch (line.substring(0, line.indexOf(' '))) {
                         case "[Date":
