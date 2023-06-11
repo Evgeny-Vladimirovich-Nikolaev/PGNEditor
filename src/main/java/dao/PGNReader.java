@@ -42,21 +42,6 @@ public class PGNReader {
 
     private static void writeGames() {
         long start = System.currentTimeMillis();
-
-
-//        int index = 0;
-//        while (index < lines.size()) {
-//            List<String> separateList = new ArrayList<>();
-//
-//            while (index < lines.size() && lines.get(index).startsWith("[")) {
-//                separateList.add(lines.get(index++));
-//            }
-//            while (index < lines.size() && !lines.get(index).startsWith("[")) {
-//                separateList.add(lines.get(index++));
-//            }
-//            processedList.add(separateList);
-//        }
-
         ListIterator<String> itr = lines.listIterator(0);
         List<String> separateList = new ArrayList<>();
         List<String> newSeparateList = null;

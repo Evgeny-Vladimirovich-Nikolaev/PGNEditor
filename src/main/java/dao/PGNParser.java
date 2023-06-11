@@ -9,6 +9,7 @@ public class PGNParser {
 
     private static List<Game> parsedGames;
 
+
     public static List<Game> parseGamesList(List<List<String>> processedList) {
         parsedGames = new ArrayList<>();
         for (List<String> list : processedList) {
@@ -16,7 +17,6 @@ public class PGNParser {
             StringBuilder sb = new StringBuilder();
             for (String line : list) {
                 if (line.startsWith("[")) {
-                    System.out.println(line);
                     String tagValue = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
                     switch (line.substring(0, line.indexOf(' '))) {
                         case "[Date":
@@ -66,11 +66,6 @@ public class PGNParser {
         byte white = 0;
         byte black = 0;
         for (byte b : position) {
-//            if (b > 65 && b < 83) {
-//                white++;
-//            } else if (b > 97 && b < 115) {
-//                black++;
-//            }
             switch (b) {
                 case 80 -> {            // P -> white pawn
                     material[0]++;
@@ -127,14 +122,22 @@ public class PGNParser {
             game.setBlackNumber(black);
             game.setTotalNumber((byte) (white + black));
         }
-        String status = MaterialClassifier.startAnalyze(position, material);
-        System.out.println(status);
+
+        MaterialClassifications classification = MaterialClassifier.startAnalyze(position, material);
+        if (classification != null) {
+            game.setMaterial(classification.getCategory());
+            game.setMaterialIndex((byte) classification.getIndex());
+        } else {
+            game.setMaterial("Отсутствует категория");
+            game.setMaterialIndex((byte) -1);
+        }
+
     }
 }
 
 class MaterialClassifier {
 
-    static String startAnalyze(byte[] position, int[] material) {
+    static MaterialClassifications startAnalyze(byte[] position, int[] material) {
         if (material[13] > 0) {
             return countWithQueens(material);
         } else if (material[12] > 0) {
@@ -144,129 +147,162 @@ class MaterialClassifier {
         } else if (material[10] > 0) {
             return countWithKnights(material);
         } else if (material[0] != 0 && material[5] != 0) {
-            return MaterialClassifications.P.getCategory();
+            return MaterialClassifications.P;
         }
         throw new RuntimeException();
     }
 
-    private static String countWithQueens(int[] material) {
+    private static MaterialClassifications countWithQueens(int[] material) {
         if (material[12] > 0) {
             return countWithQueensAndRooks(material);
         } else if (material[11] > 0) {
             return countWithQueensAndBishops(material);
         } else if (material[10] > 0) {
-            return MaterialClassifications.QN_VARIATIONS.getCategory();
+            return MaterialClassifications.QN_VARIATIONS;
         } else if (material[4] == 1 && material[9] == 1) {
-            return MaterialClassifications.Q_VS_Q.getCategory();
+            return MaterialClassifications.Q_VS_Q;
         } else if ((material[4] == 1 && material[9] == 0 && material[5] > 0) || (material[9] == 1 && material[4] == 0 && material[0] > 0)) {
-            return MaterialClassifications.Q_VS_P.getCategory();
+            return MaterialClassifications.Q_VS_P;
         }
         return null;
     }
 
-    private static String countWithQueensAndRooks(int[] material) {
+    private static MaterialClassifications countWithQueensAndRooks(int[] material) {
         if (material[10] == 0) {
             if (material[11] == 0) {
-                return MaterialClassifications.QR_VARIATIONS.getCategory();
+                return MaterialClassifications.QR_VARIATIONS;
             }
-            return MaterialClassifications.QRB_VARIATIONS.getCategory();
+            return MaterialClassifications.QRB_VARIATIONS;
         }
         if (material[11] == 0) {
-            return MaterialClassifications.QRN_VARIATIONS.getCategory();
+            return MaterialClassifications.QRN_VARIATIONS;
         }
         if (material[14] == 4) {
-            return MaterialClassifications.QRBN_VARIATIONS_4.getCategory();
+            return MaterialClassifications.QRBN_VARIATIONS_4;
         }
         if (material[14] == 5) {
-            return MaterialClassifications.QRBN_VARIATIONS_5.getCategory();
+            return MaterialClassifications.QRBN_VARIATIONS_5;
         }
-        return MaterialClassifications.QRBN_VARIATIONS_6_0R_M0RE.getCategory();
+        return MaterialClassifications.QRBN_VARIATIONS_6_0R_M0RE;
     }
 
-    private static String countWithQueensAndBishops(int[] material) {
+    private static MaterialClassifications countWithQueensAndBishops(int[] material) {
         if (material[10] == 0) {
-            return MaterialClassifications.QB_VARIATIONS.getCategory();
+            return MaterialClassifications.QB_VARIATIONS;
         }
         if (material[14] == 3) {
-            return MaterialClassifications.QBN_VARIATIONS_3.getCategory();
+            return MaterialClassifications.QBN_VARIATIONS_3;
         }
         if (material[14] == 4) {
-            return MaterialClassifications.QBN_VARIATIONS_4.getCategory();
+            return MaterialClassifications.QBN_VARIATIONS_4;
         }
-        return MaterialClassifications.QBN_VARIATIONS_5_OR_MORE_PIECES.getCategory();
+        return MaterialClassifications.QBN_VARIATIONS_5_OR_MORE_PIECES;
     }
 
-    private static String countWithRooks(int[] material) {
+    private static MaterialClassifications countWithRooks(int[] material) {
         if (material[14] == 1) {
-            return MaterialClassifications.ONE_R.getCategory();
+            return MaterialClassifications.ONE_R;
         }
         if (material[10] == 0 && material[11] == 0) {
             if (material[3] == 1 && material[8] == 1) {
-                return MaterialClassifications.R_VS_R.getCategory();
+                return MaterialClassifications.R_VS_R;
             }
-            return MaterialClassifications.SEVERAL_R.getCategory();
+            if(material[12] == 2) {
+                return MaterialClassifications.TWO_R_SAME_SIDE;
+            }
+            return MaterialClassifications.THREE_OR_MORE_R;
         }
         if (material[11] == 0) {
-            if ((material[3] == 1 && material[6] == 1) || (material[1] == 1 && material[8] == 1)) {
-                return MaterialClassifications.R_VS_N.getCategory();
+            if (material[14] == 2) {
+                if ((material[3] == 1 && material[6] == 1) || (material[1] == 1 && material[8] == 1)) {
+                    return MaterialClassifications.R_VS_N;
+                }
+                if ((material[1] == 1 && material[3] == 1 && material[5] > 0) || (material[6] == 1 && material[8] == 1 && material[0] > 0)) {
+                    return MaterialClassifications.RN_VS_P;
+                }
             }
-            if ((material[1] == 1 && material[3] == 1 && material[5] > 0) || (material[6] == 1 && material[8] == 1 && material[0] > 0)) {
-                return MaterialClassifications.RN_VS_P.getCategory();
-            }
-            return MaterialClassifications.RN_VARIATIONS.getCategory();
+            return MaterialClassifications.RN_VARIATIONS;
         }
         if (material[10] == 0) {
-            if ((material[3] == 1 && material[7] == 1) || (material[2] == 1 && material[8] == 1)) {
-                return MaterialClassifications.R_VS_B.getCategory();
+            if (material[14] == 2) {
+                if ((material[3] == 1 && material[7] == 1) || (material[2] == 1 && material[8] == 1)) {
+                    return MaterialClassifications.R_VS_B;
+                }
+                if ((material[2] == 1 && material[3] == 1 && material[5] > 0) || (material[7] == 1 && material[8] == 1 && material[0] > 0)) {
+                    return MaterialClassifications.RB_VS_P;
+                }
             }
-            if ((material[2] == 1 && material[3] == 1 && material[5] > 0) || (material[7] == 1 && material[8] == 1 && material[0] > 0)) {
-                return MaterialClassifications.RB_VS_P.getCategory();
-            }
-            return MaterialClassifications.RB_VARIATIONS.getCategory();
+            return MaterialClassifications.RB_VARIATIONS;
         }
         if (material[14] == 3) {
-            return MaterialClassifications.RBN_VARIATIONS_3.getCategory();
+            return MaterialClassifications.RBN_VARIATIONS_3;
         }
         if (material[14] == 4) {
-            return MaterialClassifications.RBN_VARIATIONS_4.getCategory();
+            return MaterialClassifications.RBN_VARIATIONS_4;
         }
-        return MaterialClassifications.RBN_VARIATIONS_5_OR_MORE.getCategory();
+        return MaterialClassifications.RBN_VARIATIONS_5_OR_MORE;
     }
 
-    private static String countWithBishops(byte[] position, int[] material) {
+    private static MaterialClassifications countWithBishops(byte[] position, int[] material) {
         if (material[14] == 1) {
-            return MaterialClassifications.ONE_B.getCategory();
+            return MaterialClassifications.ONE_B;
         }
         if (material[14] == 2) {
             if (material[2] == 1 && material[7] == 1) {
                 if (isSameColored(position)) {
-                    return MaterialClassifications.B_VS_B_SAME_COLORED.getCategory();
+                    return MaterialClassifications.B_VS_B_SAME_COLORED;
                 }
-                return MaterialClassifications.B_VS_B_OPPOSITE_COLORED.getCategory();
+                return MaterialClassifications.B_VS_B_OPPOSITE_COLORED;
+            }
+            if (material[2] == 2 || material[7] == 2) {
+                return MaterialClassifications.TWO_B_SAME_SIDE;
+            }
+            if ((material[1] == 1 && material[7] == 1) || (material[2] == 1 && material[6] == 1)) {
+                return MaterialClassifications.B_VS_N;
+            }
+            if ((material[1] == 1 && material[5] > 0)
+                    || (material[6] == 1 && material[0] > 0)) {
+                return MaterialClassifications.BN_VS_P;
             }
         }
-        return null;
+        if (material[10] > 0) {
+            return MaterialClassifications.BN_VARIATIONS;
+        }
+        return MaterialClassifications.THREE_OR_MORE_B;
     }
 
+//    Метод считает сумму координат слонов (система координат не имеет значения).
+//    Если сумма чётная, слоны одноцветные. Иначе - разноцветные.
     private static boolean isSameColored(byte[] position) {
         int sum = 0;
         for (int sym = 0, row = 0, count = 0; sym < position.length && count < 2; sym++, row++) {
             int column = 0;
-            while (position[sym] != 47) {
+            while (sym < position.length && position[sym] != 47) {
                 if (position[sym] > 48 && position[sym] < 57) {
                     column += position[sym];
                 } else if (position[sym] == 66 || position[sym] == 98) {
                     sum = sum + row + column;
                     count++;
+                    column++;
+                } else {
+                    column++;
                 }
                 sym++;
-                column++;
             }
         }
         return sum % 2 == 0;
     }
 
-    private static String countWithKnights(int[] material) {
-        return null;
+    private static MaterialClassifications countWithKnights(int[] material) {
+        if (material[14] == 1) {
+            return MaterialClassifications.ONE_N;
+        }
+        if (material[14] == 2) {
+            if (material[1] == 1) {
+                return MaterialClassifications.N_VS_N;
+            }
+            return MaterialClassifications.TWO_N_SAME_SIDE;
+        }
+        return MaterialClassifications.THREE_OR_MORE_N;
     }
 }

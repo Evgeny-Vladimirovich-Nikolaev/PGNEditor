@@ -7,20 +7,21 @@ import java.util.Date;
 @Data
 public class Game {
 
-    String author;
-    String task;
-    String result;
-    byte whiteNumber;
-    byte blackNumber;
-    byte totalNumber;
-    String material;
+    private String author;
+    private String task;
+    private String result;
+    private byte whiteNumber;
+    private byte blackNumber;
+    private byte totalNumber;
+    private String material;
     byte materialIndex;
-    String ideas;
-    String fen;
-    String body;
-    String date;
-    String event;
-    String annotator;
-    String remark;
+    private String ideas;
+    private String fen;
+    private String body;
+    private String date;
+    private String event;
+    private String annotator;
+    private String remark;
+    private String source;
 
 }
