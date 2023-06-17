@@ -140,13 +140,17 @@ class MaterialClassifier {
     static MaterialClassifications startAnalyze(byte[] position, int[] material) {
         if (material[13] > 0) {
             return countWithQueens(material);
-        } else if (material[12] > 0) {
+        }
+        if (material[12] > 0) {
             return countWithRooks(material);
-        } else if (material[11] > 0) {
+        }
+        if (material[11] > 0) {
             return countWithBishops(position, material);
-        } else if (material[10] > 0) {
+        }
+        if (material[10] > 0) {
             return countWithKnights(material);
-        } else if (material[0] != 0 && material[5] != 0) {
+        }
+        if (material[0] != 0 && material[5] != 0) {
             return MaterialClassifications.P;
         }
         throw new RuntimeException();
